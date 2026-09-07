@@ -1,16 +1,17 @@
 #include <Arduino.h>
 
+const int LED = 8;
+
 void setup()
 {
-    Serial.begin(9600);
-
-    Serial.println("Arduino Mega 2560 R3");
-    Serial.println("Conexion serie funcionando correctamente");
+    pinMode(LED, OUTPUT);
 }
 
 void loop()
 {
-    Serial.println("Arduino funcionando...");
+    digitalWrite(LED, HIGH);
+    delay(1000);
 
+    digitalWrite(LED, LOW);
     delay(1000);
 }
