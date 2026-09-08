@@ -1,0 +1,28 @@
+#include <Arduino.h>
+
+const int PULSADOR = 7;
+
+void setup()
+{
+    Serial.begin(9600);
+
+    pinMode(PULSADOR, INPUT_PULLUP);
+
+    Serial.println("Prueba del pulsador");
+}
+
+void loop()
+{
+    int estado = digitalRead(PULSADOR);
+
+    if (estado == LOW)
+    {
+        Serial.println("Pulsador pulsado");
+    }
+    else
+    {
+        Serial.println("Pulsador libre");
+    }
+
+    delay(200);
+}
