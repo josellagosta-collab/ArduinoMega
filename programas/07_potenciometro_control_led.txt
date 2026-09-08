@@ -1,0 +1,28 @@
+#include <Arduino.h>
+
+const int POTENCIOMETRO = A0;
+const int LED = 9;
+
+void setup()
+{
+    Serial.begin(9600);
+
+    pinMode(LED, OUTPUT);
+}
+
+void loop()
+{
+    int valorPotenciometro = analogRead(POTENCIOMETRO);
+
+    int brillo = map(valorPotenciometro, 0, 1023, 0, 255);
+
+    analogWrite(LED, brillo);
+
+    Serial.print("Potenciometro: ");
+    Serial.print(valorPotenciometro);
+
+    Serial.print("  PWM: ");
+    Serial.println(brillo);
+
+    delay(100);
+}

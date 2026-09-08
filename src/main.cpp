@@ -1,23 +1,27 @@
 #include <Arduino.h>
 
-const int LED = 9;
+const int POTENCIOMETRO = A0;
 
 void setup()
 {
-    pinMode(LED, OUTPUT);
+    Serial.begin(9600);
+
+    Serial.println("Lectura del potenciometro");
 }
 
 void loop()
 {
-    for (int brillo = 0; brillo <= 255; brillo++)
-    {
-        analogWrite(LED, brillo);
-        delay(10);
-    }
+    int valor = analogRead(POTENCIOMETRO);
 
-    for (int brillo = 255; brillo >= 0; brillo--)
-    {
-        analogWrite(LED, brillo);
-        delay(10);
-    }
+    float voltaje = valor * 5.0 / 1023.0;
+
+    Serial.print("ADC: ");
+    Serial.print(valor);
+
+    Serial.print("   Voltaje: ");
+    Serial.print(voltaje);
+
+    Serial.println(" V");
+
+    delay(200);
 }
