@@ -1,0 +1,38 @@
+#include <Arduino.h>
+
+void setup()
+{
+    // Comunicación USB con el ordenador
+    Serial.begin(9600);
+
+    // Comunicación UART con el ESP8266
+    Serial1.begin(115200);
+
+    delay(1000);
+
+    Serial.println();
+    Serial.println("================================");
+    Serial.println(" Arduino Mega <-> ESP8266");
+    Serial.println("================================");
+    Serial.println();
+    Serial.println("Puente serie iniciado");
+    Serial.println("Introduce comandos AT");
+    Serial.println();
+}
+
+void loop()
+{
+    // Ordenador -> ESP8266
+    if (Serial.available() > 0)
+    {
+        char dato = Serial.read();
+        Serial1.write(dato);
+    }
+
+    // ESP8266 -> Ordenador
+    if (Serial1.available() > 0)
+    {
+        char dato = Serial1.read();
+        Serial.write(dato);
+    }
+}

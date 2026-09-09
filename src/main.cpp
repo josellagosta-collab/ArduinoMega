@@ -1,46 +1,26 @@
 #include <Arduino.h>
 
-const int LED_ROJO = 9;
-const int LED_VERDE = 10;
-const int LED_AZUL = 11;
-
-void color(int rojo, int verde, int azul)
-{
-    analogWrite(LED_ROJO, rojo);
-    analogWrite(LED_VERDE, verde);
-    analogWrite(LED_AZUL, azul);
-}
-
 void setup()
 {
-    pinMode(LED_ROJO, OUTPUT);
-    pinMode(LED_VERDE, OUTPUT);
-    pinMode(LED_AZUL, OUTPUT);
+    Serial.begin(9600);
+    Serial1.begin(9600);
+
+    Serial.println("Puente Serial <-> Serial1 iniciado");
 }
 
 void loop()
 {
-    color(255, 0, 0);
-    delay(1000);
+    if (Serial.available() > 0)
+    {
+        char dato = Serial.read();
 
-    color(0, 255, 0);
-    delay(1000);
+        Serial1.write(dato);
+    }
 
-    color(0, 0, 255);
-    delay(1000);
+    if (Serial1.available() > 0)
+    {
+        char dato = Serial1.read();
 
-    color(255, 255, 0);
-    delay(1000);
-
-    color(255, 0, 255);
-    delay(1000);
-
-    color(0, 255, 255);
-    delay(1000);
-
-    color(255, 255, 255);
-    delay(1000);
-
-    color(0, 0, 0);
-    delay(1000);
+        Serial.write(dato);
+    }
 }
