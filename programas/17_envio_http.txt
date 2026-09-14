@@ -1,0 +1,283 @@
+#include <Arduino.h>
+
+// ------------------------------------------------
+// CONFIGURACIÓN
+// ------------------------------------------------
+
+const int SENSOR = A0;
+
+const char* SSID = "NOMBRE_WIFI";
+const char* PASSWORD = "CONTRASENA_WIFI";
+
+// IP del ordenador Windows 11 donde se ejecuta servidor.py
+const char* IP_SERVIDOR = "10.113.170.1";
+
+const int PUERTO_SERVIDOR = 8000;
+
+
+// ------------------------------------------------
+// ENVIAR COMANDO AT
+// ------------------------------------------------
+
+void enviarAT(String comando, unsigned long tiempoEspera)
+{
+    Serial.print(">> ");
+    Serial.println(comando);
+
+    Serial1.print(comando);
+    Serial1.print("\r\n");
+
+    unsigned long inicio = millis();
+
+    while (millis() - inicio < tiempoEspera)
+    {
+        while (Serial1.available())
+        {
+            Serial.write(Serial1.read());
+        }
+    }
+}
+
+
+// ------------------------------------------------
+// CONECTAR AL WIFI
+// ------------------------------------------------
+
+void conectarWiFi()
+{
+    Serial.println();
+    Serial.println("==============================");
+    Serial.println(" CONFIGURANDO ESP8266");
+    Serial.println("==============================");
+    Serial.println();
+
+
+    // Comprobar comunicación
+    enviarAT(
+        "AT",
+        1000
+    );
+
+
+    // Modo estación
+    enviarAT(
+        "AT+CWMODE=1",
+        1000
+    );
+
+
+    // Conectar al Wi-Fi
+    String comandoWiFi =
+        "AT+CWJAP=\"" +
+        String(SSID) +
+        "\",\"" +
+        String(PASSWORD) +
+        "\"";
+
+
+    enviarAT(
+        comandoWiFi,
+        8000
+    );
+
+
+    // Desactivar servidor de prácticas anteriores
+    enviarAT(
+        "AT+CIPSERVER=0",
+        1000
+    );
+
+
+    // Una única conexión TCP
+    enviarAT(
+        "AT+CIPMUX=0",
+        1000
+    );
+
+
+    // Mostrar dirección IP
+    enviarAT(
+        "AT+CIFSR",
+        1000
+    );
+
+
+    Serial.println();
+    Serial.println("ESP8266 preparado.");
+    Serial.println();
+}
+
+
+// ------------------------------------------------
+// LEER RESPUESTA DEL ESP8266
+// ------------------------------------------------
+
+void mostrarRespuestaESP(unsigned long tiempo)
+{
+    unsigned long inicio = millis();
+
+    while (millis() - inicio < tiempo)
+    {
+        while (Serial1.available())
+        {
+            char dato = Serial1.read();
+
+            Serial.write(dato);
+        }
+    }
+}
+
+
+// ------------------------------------------------
+// ENVIAR DATO MEDIANTE HTTP
+// ------------------------------------------------
+
+void enviarDatoHTTP(int valor)
+{
+    Serial.println();
+    Serial.println("--------------------------------");
+    Serial.print("Valor sensor: ");
+    Serial.println(valor);
+
+    Serial.println("Enviando dato al servidor...");
+    Serial.println();
+
+
+    // --------------------------------------------
+    // 1. Abrir conexión TCP
+    // --------------------------------------------
+
+    String comandoConexion =
+        "AT+CIPSTART=\"TCP\",\"" +
+        String(IP_SERVIDOR) +
+        "\"," +
+        String(PUERTO_SERVIDOR);
+
+
+    Serial.print(">> ");
+    Serial.println(comandoConexion);
+
+    Serial1.print(comandoConexion);
+    Serial1.print("\r\n");
+
+
+    mostrarRespuestaESP(3000);
+
+
+    // --------------------------------------------
+    // 2. Construir petición HTTP
+    // --------------------------------------------
+
+    String peticion = "";
+
+    peticion += "GET /dato?valor=";
+    peticion += String(valor);
+    peticion += " HTTP/1.1\r\n";
+
+    peticion += "Host: ";
+    peticion += IP_SERVIDOR;
+    peticion += "\r\n";
+
+    peticion += "Connection: close\r\n";
+
+    peticion += "\r\n";
+
+
+    Serial.println();
+    Serial.println("Peticion HTTP:");
+    Serial.println(peticion);
+
+
+    // --------------------------------------------
+    // 3. Indicar cuantos bytes vamos a enviar
+    // --------------------------------------------
+
+    Serial1.print("AT+CIPSEND=");
+    Serial1.print(peticion.length());
+    Serial1.print("\r\n");
+
+
+    mostrarRespuestaESP(1500);
+
+
+    // --------------------------------------------
+    // 4. Enviar petición HTTP
+    // --------------------------------------------
+
+    Serial1.print(peticion);
+
+
+    // --------------------------------------------
+    // 5. Mostrar respuesta del servidor
+    // --------------------------------------------
+
+    Serial.println();
+    Serial.println("Respuesta del servidor:");
+
+    mostrarRespuestaESP(4000);
+
+
+    /*
+       No enviamos:
+
+       AT+CIPCLOSE
+
+       porque nuestra petición contiene:
+
+       Connection: close
+
+       El servidor HTTP cierra la conexión
+       automáticamente después de responder.
+    */
+
+
+    Serial.println();
+    Serial.println("Envio finalizado.");
+    Serial.println("--------------------------------");
+}
+
+
+// ------------------------------------------------
+// SETUP
+// ------------------------------------------------
+
+void setup()
+{
+    // PC <-> Arduino Mega
+    Serial.begin(9600);
+
+    // Arduino Mega <-> ESP8266
+    Serial1.begin(9600);
+
+
+    delay(2000);
+
+
+    Serial.println();
+    Serial.println("==============================");
+    Serial.println(" LECCION 17 - ENVIO HTTP");
+    Serial.println("==============================");
+    Serial.println();
+
+
+    conectarWiFi();
+}
+
+
+// ------------------------------------------------
+// LOOP
+// ------------------------------------------------
+
+void loop()
+{
+    // Leer el potenciómetro o sensor en A0
+    int valor = analogRead(SENSOR);
+
+
+    // Enviar el valor al servidor
+    enviarDatoHTTP(valor);
+
+
+    // Nueva medida cada 10 segundos
+    delay(10000);
+}
