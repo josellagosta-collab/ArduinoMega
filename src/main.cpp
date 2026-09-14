@@ -11,8 +11,8 @@ const int SENSOR = A0;
 // CONFIGURACIÓN WIFI
 // ------------------------------------------------
 
-const char* SSID = "NOMBRE_WIFI";
-const char* PASSWORD = "CONTRASENA_WIFI";
+const char* SSID = "Pixel 7";
+const char* PASSWORD = "Alquife+1";
 
 
 // ------------------------------------------------
@@ -32,7 +32,7 @@ const char* ORGANIZACION = "ArduinoCurso";
 const char* BUCKET = "arduino";
 
 // Token con permisos de escritura
-const char* TOKEN = "TU_TOKEN";
+const char* TOKEN = "lMUwGrWtDpo0hbHe9fZWIichyTgCQXvh-AYm_gPWyl3ntdJt4mRuqDOnXhLXc1gpu6YACuCKZjR8CQHPwwDxfQ==";
 
 
 // ------------------------------------------------
