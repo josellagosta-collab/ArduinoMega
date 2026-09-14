@@ -1,5 +1,3 @@
-Claro. La **Lección 21** será el **proyecto final autónomo**, de forma que ya no demos a los alumnos un programa completo para copiar. Tendrán que diseñar su solución aplicando lo aprendido en las lecciones anteriores, documentarla y demostrar físicamente que funciona.
-
 # Lección 21 — Proyecto final IoT
 
 ## 1. Introducción
