@@ -3,8 +3,8 @@
 const int LED = 8;
 const int SENSOR = A0;
 
-const char* SSID = "NOMBRE_WIFI";
-const char* PASSWORD = "CONTRASENA_WIFI";
+const char* SSID = "Pixel 7";
+const char* PASSWORD = "Alquife+1";
 
 bool estadoLED = false;
 
